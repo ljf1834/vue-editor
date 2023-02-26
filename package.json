@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "editor for vue",
   "main": "index.js",
-	"module": "dist/index.j s",
+	"module": "dist/index.js",
 	"exports": {
 		".": {
 			"import": "./dist/index.js",
@@ -11,6 +11,7 @@
 			"types": "./dist/repl.d.ts"
 		},
 		"./style.css": "./dist/style.css",
+		"./icon.css": "./dist/icon.css",
 		"./dist/style.css": "./dist/style.css"
 	},
   "scripts": {

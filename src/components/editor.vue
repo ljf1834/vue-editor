@@ -3,7 +3,7 @@
     <div :class="['cus__editable__toolbar']" v-show="affix ? currentId === uuid : true">
       <editor-toolbar />
     </div>
-    <editable-item
+    <editor-item
       :placeholder="placeholder"
       :modelValue="model"
       @update:modelValue="onUpdate"
