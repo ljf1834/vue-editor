@@ -17,9 +17,12 @@
       "@/*": [
         "src/*"
       ],
-      "$": [
-        "src/utils"
-      ]
+      "$/*": [
+        "src/utils/*"
+      ],
+	    "$": [
+		    "src/utils"
+	    ]
     }
   },
   "include": [
