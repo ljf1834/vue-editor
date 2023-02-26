@@ -16,7 +16,8 @@
 	},
   "scripts": {
     "build:rollup": "rimraf dist && rollup -c rollup.config.ts --configPlugin typescript --bundleConfigAsCjs",
-    "build": "vite build"
+    "build": "vite build",
+	  "play": "pnpm run -C examples/my-vue-app dev",
   },
   "keywords": [],
   "author": "",
