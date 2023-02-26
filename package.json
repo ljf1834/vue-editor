@@ -20,6 +20,9 @@
 	  "play": "pnpm run -C examples/my-vue-app dev",
   },
   "keywords": [],
+	"files": [
+		"dist"
+	],
   "author": "",
   "license": "MIT",
   "devDependencies": {
