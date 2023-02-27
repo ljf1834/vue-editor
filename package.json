@@ -1,5 +1,6 @@
 {
   "name": "vue-editor",
+	"private": true,
   "version": "1.0.0",
   "description": "editor for vue",
   "main": "index.js",
@@ -17,7 +18,7 @@
   "scripts": {
     "build:rollup": "rimraf dist && rollup -c rollup.config.ts --configPlugin typescript --bundleConfigAsCjs",
     "build": "vite build",
-	  "play": "pnpm run -C examples/my-vue-app dev",
+	  "play": "pnpm run -C examples/my-vue-app dev"
   },
   "keywords": [],
 	"files": [

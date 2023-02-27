@@ -1,11 +1,14 @@
 <script setup>
+console.log('Hello world!');
 </script>
 
 <template>
   <div class="wrapper">
-    <editor-toolbar />
-    <editor-item/>
-    <editor-item/>
+    <el-image :src="'https://cn.vitejs.dev/logo-with-shadow.png'" />
+    <el-menu></el-menu>
+<!--    <editor-toolbar />-->
+<!--    <editor-item/>-->
+<!--    <editor-item/>-->
   </div>
 </template>
 

@@ -6,5 +6,6 @@ import 'vue-editor/style.css'
 import 'vue-editor/icon.css'
 
 const app = createApp(App)
+// app.use(ElementPlus)
 app.use(VueEditor)
 app.mount('#app')
