@@ -27,7 +27,7 @@
       </template>
     </div>
     <div :class="['cus__toolbar__tooltip', { 'is_show': tooltip.show } ]" :style="{ left: `${tooltip.offset}px` }">{{ tooltip.text }}</div>
-    <div v-show="showDropdown && (!uuid || currentId === uuid)" class="cus__toolbar__dropdown" ref="dropdownRef" @click.stop></div>
+    <div v-show="showDropdown && (currentId === uuid)" class="cus__toolbar__dropdown" ref="dropdownRef" @click.stop></div>
   </div>
 </template>
 
@@ -35,6 +35,8 @@
 import { ref,h, render, reactive, computed, onUnmounted, watch, inject, PropType } from 'vue';
 import store from '@/store';
 import { toolbarList, toolbarDefault, TMenuType } from '$/toolbar';
+import { UploadRequestOptions } from '@/types';
+
 type TPropsToolList = Array<TMenuType | TMenuType[]>;
 export default {
   name: 'editor-toolbar',
@@ -42,10 +44,24 @@ export default {
     toolbarList: {
       type: Array as PropType<TPropsToolList>,
       default: () => toolbarDefault
+    },
+    uploadOptions: {
+      type: Object as PropType<UploadRequestOptions>,
+      default: () => ({
+        action: '',
+        headers: {},
+        method: 'post',
+        data: {},
+        name: 'file',
+        withCredentials: false,
+        onSuccess: null,
+        onError: null,
+        onProgress: null
+      })
     }
   },
   setup(props) {
-    let menuList = props.toolbarList.reduce((list, type) => {
+    const menuList = props.toolbarList.reduce((list, type) => {
       if (Array.isArray(type)) {
         list.push(type.filter(t => !!toolbarList[t]).map(type => ({ ...toolbarList[type], type })))
       } else if (!!toolbarList[type]) {
@@ -57,13 +73,13 @@ export default {
     /* ------------- 点击工具栏 ------------- */
     const menuHandle = (tool) => {
       if (tool.type === 'image') {
-        let fileDom: HTMLInputElement = document.createElement('input');
-        fileDom.setAttribute('type', 'file');
-        fileDom.setAttribute('accept', '.png,.jpg,.jpeg,.gif');
-        fileDom.click();
+        let fileDom: HTMLInputElement = document.createElement('input')
+        fileDom.setAttribute('type', 'file')
+        fileDom.setAttribute('accept', '.png,.jpg,.jpeg,.gif')
+        fileDom.click()
         fileDom.onchange = async () => {
           let file = fileDom.files![0];
-          store.commit('exec_command', { type: tool.type, value: file });
+          store.commit('exec_command', { type: tool.type, value: file })
         }
       } else {
         store.commit('exec_command', { type: tool.type })
@@ -71,7 +87,7 @@ export default {
     }
 
     /* ------------- 显示工具tip ------------- */
-    let tooltip = reactive({ show: false, text: '', offset: 0 });
+    const tooltip = reactive({ show: false, text: '', offset: 0 });
     const mouseover = ({ target }, text) => {
       tooltip.offset = target.offsetLeft + target.offsetWidth / 2;
       tooltip.text = text;
@@ -79,8 +95,8 @@ export default {
     }
 
     /* ------------ 显示dropdown，并挂载组件 ------------ */
-    let dropdownRef = ref<HTMLDialogElement | null>(null);
-    let showDropdown = computed(() => store.state.showDropdown);
+    const dropdownRef = ref<HTMLDialogElement | null>(null);
+    const showDropdown = computed(() => store.state.showDropdown)
     const slide = async ({ target }, { dropdown, type }) => {
       let constructor = (await dropdown()).default;
       let vnode = h(constructor);
@@ -93,14 +109,17 @@ export default {
     }
 
     /* ------------------ 隐藏dropdown ------------------ */
-    const __slideHandle = () => store.commit('set_show_dropdown', false);
-    document.body.addEventListener('click', __slideHandle);
-    onUnmounted(() => document.body.removeEventListener('click', __slideHandle))
+    const __slideHandle = () => store.commit('set_show_dropdown', false)
+    document.body.addEventListener('click', __slideHandle)
+    onUnmounted(() => {
+      document.body.removeEventListener('click', __slideHandle)
+      store.commit('remove_toolbar_instance', uuid)
+    })
 
-    let uuid = inject<string | null>('uuid', null);
-    let currentId = computed(() => store.state.currentId);
-    watch(() => store.state.currentId, () => store.commit('set_show_dropdown', false));
-
+    const uuid = inject<string | null>('uuid', Math.random().toString().substr(2))
+    const currentId = computed(() => store.state.currentId)
+    watch(currentId, () => store.commit('set_show_dropdown', false))
+    store.commit('set_toolbar_instance', { instanceKey: uuid, uploadOptions: props.uploadOptions })
 
     return { menuList, tooltip, mouseover, slide, showDropdown, dropdownRef, menuHandle, uuid, currentId }
   }

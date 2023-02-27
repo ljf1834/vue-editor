@@ -1,24 +1,26 @@
 <template>
-  <div :class="['cus__editable__contaienr', uuid,  { 'is__affix': affix, 'is__focus': currentId === uuid }]" @click.stop="onClick">
+  <div :class="['cus__editable__contaienr', uuid,  { 'is__affix': affix, 'is__focus': currentId === uuid }]"
+       @click.stop="onClick">
     <div :class="['cus__editable__toolbar']" v-show="affix ? currentId === uuid : true">
-      <editor-toolbar />
+      <editor-toolbar :uploadOptions="$props.uploadOptions"/>
     </div>
     <editor-item
-      :placeholder="placeholder"
-      :modelValue="model"
-      @update:modelValue="onUpdate"
-      :autosize="autosize"
-      @focus="$emit('focus')"
-      @blur="$emit('blur')"
+        :placeholder="placeholder"
+        :modelValue="model"
+        @update:modelValue="onUpdate"
+        :autosize="autosize"
+        @focus="$emit('focus')"
+        @blur="$emit('blur')"
     />
   </div>
 </template>
 
 <script lang="ts">
-import { ref, onUnmounted, PropType, onMounted, computed, provide } from 'vue';
+import {ref, onUnmounted, PropType, onMounted, computed, provide} from 'vue';
 import store from '@/store';
 import editorToolbar from '@/components/toolbar.vue'
 import editorItem from '@/components/item.vue'
+import { UploadRequestOptions } from '@/types';
 
 export default {
   name: 'editor',
@@ -38,13 +40,27 @@ export default {
     autosize: {
       type: [Number, Object] as PropType<{ minRows: number, maxRows: number } | number>,
       default: 4
+    },
+    uploadOptions: {
+      type: Object as PropType<UploadRequestOptions>,
+      default: () => ({
+        action: '',
+        headers: {},
+        method: 'post',
+        data: {},
+        name: 'file',
+        withCredentials: false,
+        onSuccess: null,
+        onError: null,
+        onProgress: null
+      })
     }
   },
   components: {
     editorToolbar,
     editorItem
   },
-  setup(props, { emit }) {
+  setup(props, {emit}) {
 
     let currentId = computed(() => store.state.currentId);
 
@@ -72,7 +88,7 @@ export default {
     });
 
 
-    return { currentId, uuid, model, onUpdate, onClick }
+    return {currentId, uuid, model, onUpdate, onClick}
   }
 }
 
@@ -93,12 +109,15 @@ $--color-primary: #1AAFA7;
   border-radius: 4px;
   flex: 1;
   position: relative;
+
   &.is__focus {
     border-color: $--color-primary;
+
     .cus__editable__toolbar {
       border-color: $--color-primary;
     }
   }
+
   &.is__affix {
     .cus__editable__toolbar {
       margin-top: -1px;
@@ -111,9 +130,11 @@ $--color-primary: #1AAFA7;
       z-index: 9;
     }
   }
+
   .cus__editable__toolbar {
     border-bottom: solid 1px #ccc;
   }
+
   .cus__editable__item .cus__editable__content {
     border: 0;
   }

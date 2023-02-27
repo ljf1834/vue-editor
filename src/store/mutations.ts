@@ -34,16 +34,12 @@ export const execCommand = (state, { type, value }: { type: TMenuType, value?: a
 
   state.showDropdown = false;
 }
-
-
-
 export const setRange = (state) => {
   const selection = window.getSelection()!;
   let range = selection.getRangeAt(0);
   state.currentRange = range;
   state.showDropdown = false;
 }
-
 export const restoreRange = (state) => {
   if (state.currentRange) {
     const selection = window.getSelection()!;
@@ -55,8 +51,10 @@ export const restoreRange = (state) => {
     selection.addRange(range);
   }
 }
+export const setToolbarInstance = (state, {instanceKey, uploadOptions}) => state.toolbarInstance[instanceKey] = uploadOptions;
+export const removeToolbarInstance = (state, instanceKey) => delete state.toolbarInstance[instanceKey];
 
-
+//utils
 const __createLink = (range, { url, text }) => {
   if (range.collapsed) {
     let node = range.startContainer.nodeName === '#text' ? range.startContainer.parentNode : range.startContainer;
@@ -66,14 +64,12 @@ const __createLink = (range, { url, text }) => {
     document.execCommand('createLink', false, url);
   }
 }
-
 const __createTable = (range, { row, col }) => {
   let $td = Array.from(Array(col), () => `<td style="width: ${1 / col * 100}%"><br></td>`).join('');
   let $tr = Array.from(Array(row), () => `<tr>${ $td }</tr>`).join('');
   let $table = `<table style="width: 100%;border-collapse: collapse;"><tbody>${ $tr }</tbody></table>`;
   document.execCommand('insertHTML', false, $table);
 }
-
 const __createImage = async (range, file) => {
   const formData = new FormData();
   formData.append('file', file);
@@ -99,8 +95,6 @@ const __createImage = async (range, file) => {
   // let src = `${import.meta.env.VITE_APP_BASE_URL}${res.json.filePath}`;
   // document.execCommand('insertImage', false, src);
 }
-
-
 const __setAlign = (range, value) => {
   if (range.startContainer === range.endContainer && Math.abs(range.endOffset - range.startOffset) === 1 && range.commonAncestorContainer.childNodes[range.startOffset].tagName === 'IMG') {
     if (value === 'justify') { return; }
@@ -115,21 +109,17 @@ const __setAlign = (range, value) => {
   }
   document.body.querySelector('.cus__image__editable')?.remove();
 }
-
 const __setStyle = (range, style, value) => {
   let { startContainer, endContainer } = range;
   __getCurrentBlockParent(startContainer).style[style] = value;
   __getCurrentBlockParent(endContainer).style[style] = value;
 }
-
-
 const __getCurrentBlockParent = (node) => {
   while (node.tagName !== 'P' && node.tagName !== 'TABLE' && node.tagName !== 'TD' && node.tagName !== 'DIV') {
     node = node.parentNode;
   }
   return node;
 }
-
 const __getDomIndex = (el: HTMLElement): number => {
   let $parent = el.parentElement!;
   for (let i = 0; i < $parent.children.length; i++) {
