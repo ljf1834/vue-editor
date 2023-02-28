@@ -6,6 +6,7 @@ import {
   restoreRange as restore_range,
   setToolbarInstance as set_toolbar_instance,
   removeToolbarInstance as remove_toolbar_instance,
+  setActiveToolbarInstanceKey as set_active_toolbar_instance_key
 } from './mutations'
 
 interface State {
@@ -14,14 +15,16 @@ interface State {
   currentType: string;
   currentId: string | null;
   toolbarInstance: Record<string, UploadRequestOptions>
+  activeToolbarInstanceKey: string | null
 }
 
-const state = {
+const state: State = {
   currentRange: null,
   showDropdown: false,
   currentType: '',
   currentId: null,
-  toolbarInstance: {}
+  toolbarInstance: {},
+  activeToolbarInstanceKey: null
 }
 
 
@@ -32,6 +35,7 @@ const mutations = {
   restore_range,
   set_toolbar_instance,
   remove_toolbar_instance,
+  set_active_toolbar_instance_key,
   set_show_dropdown: (state, payload) => { state.showDropdown = payload; },
   set_current_type: (state, payload) => { state.currentType = payload; },
 }

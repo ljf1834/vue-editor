@@ -12,7 +12,7 @@ export const execCommand = (state, { type, value }: { type: TMenuType, value?: a
   } else if (type === 'table') {
     __createTable(state.currentRange, value);
   } else if (type === 'image') {
-    __createImage(state.currentRange, value);
+    __createImage(state, value);
   } else if (type === 'text-indent') {
     let el = __getCurrentBlockParent(state.currentRange.commonAncestorContainer);
     let { collapsed, startContainer, endContainer } = state.currentRange;
@@ -53,6 +53,7 @@ export const restoreRange = (state) => {
 }
 export const setToolbarInstance = (state, {instanceKey, uploadOptions}) => state.toolbarInstance[instanceKey] = uploadOptions;
 export const removeToolbarInstance = (state, instanceKey) => delete state.toolbarInstance[instanceKey];
+export const setActiveToolbarInstanceKey = (state, instanceKey) => state.activeToolbarInstanceKey = instanceKey;
 
 //utils
 const __createLink = (range, { url, text }) => {
@@ -70,30 +71,17 @@ const __createTable = (range, { row, col }) => {
   let $table = `<table style="width: 100%;border-collapse: collapse;"><tbody>${ $tr }</tbody></table>`;
   document.execCommand('insertHTML', false, $table);
 }
-const __createImage = async (range, file) => {
-  const formData = new FormData();
-  formData.append('file', file);
+const __createImage = async (state, file) => {
+  const _onSuccess = state.toolbarInstance[state.activeToolbarInstanceKey].onSuccess;
   ajax({
-    data: {},
-    action: '/system/file/uploadFile',
-    file,
+    ...state.toolbarInstance[state.activeToolbarInstanceKey],
+    file: file,
     filename: file.name,
-    method: 'post',
-    headers: {},
-    withCredentials: true,
-    onProgress: (e) => {
-
-    },
-    onError:(e) => {
-
-    },
     onSuccess: (res) => {
-      document.execCommand('insertImage', false, res.json.filePath);
+      document.execCommand('insertImage', false, res.data.url)
+      _onSuccess(res)
     }
   })
-  // let res = await axios.post<null, any>('/system/file/uploadFile', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
-  // let src = `${import.meta.env.VITE_APP_BASE_URL}${res.json.filePath}`;
-  // document.execCommand('insertImage', false, src);
 }
 const __setAlign = (range, value) => {
   if (range.startContainer === range.endContainer && Math.abs(range.endOffset - range.startOffset) === 1 && range.commonAncestorContainer.childNodes[range.startOffset].tagName === 'IMG') {

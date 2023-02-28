@@ -79,6 +79,7 @@ export default {
         fileDom.click()
         fileDom.onchange = async () => {
           let file = fileDom.files![0];
+          store.commit('set_active_toolbar_instance_key', uuid)
           store.commit('exec_command', { type: tool.type, value: file })
         }
       } else {
@@ -116,7 +117,7 @@ export default {
       store.commit('remove_toolbar_instance', uuid)
     })
 
-    const uuid = inject<string | null>('uuid', Math.random().toString().substr(2))
+    const uuid = inject<string>('uuid', Math.random().toString().substr(2))
     const currentId = computed(() => store.state.currentId)
     watch(currentId, () => store.commit('set_show_dropdown', false))
     store.commit('set_toolbar_instance', { instanceKey: uuid, uploadOptions: props.uploadOptions })
