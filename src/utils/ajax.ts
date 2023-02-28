@@ -58,12 +58,14 @@ const ajaxUpload: UploadRequestHandler = (option) => {
 
   const xhr = new XMLHttpRequest()
   const action = option.action
+  option.method = option.method || 'post'
+  option.filename = option.filename || 'file'
 
   if (xhr.upload) {
     xhr.upload.addEventListener('progress', (evt) => {
       const progressEvt = evt as UploadProgressEvent
       progressEvt.percent = evt.total > 0 ? (evt.loaded / evt.total) * 100 : 0
-      option.onProgress(progressEvt)
+      option.onProgress ? option.onProgress(progressEvt) : false
     })
   }
 
@@ -77,14 +79,14 @@ const ajaxUpload: UploadRequestHandler = (option) => {
   formData.append(option.filename, option.file, option.file.name)
 
   xhr.addEventListener('error', () => {
-    option.onError(getError(action, option, xhr))
+    option.onError ? option.onError(getError(action, option, xhr)) : false
   })
 
   xhr.addEventListener('load', () => {
     if (xhr.status < 200 || xhr.status >= 300) {
-      return option.onError(getError(action, option, xhr))
+      return option.onError ? option.onError(getError(action, option, xhr)) : false
     }
-    option.onSuccess(getBody(xhr))
+    option.onSuccess ? option.onSuccess(getBody(xhr)) : false
   })
 
   xhr.open(option.method, action, true)

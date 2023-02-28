@@ -2,6 +2,7 @@ export { default as element } from './element'
 export { default as debounce } from './debounce'
 import { defaultText } from "./const"
 
+export const NOOP = () => {}
 
 export const setAutoSize = (autosize: number | { minRows: number, maxRows: number }, $editable: HTMLDivElement) => {
   if (typeof autosize === 'number') {

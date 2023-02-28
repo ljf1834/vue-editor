@@ -76,7 +76,6 @@ const __createImage = async (state, file) => {
   ajax({
     ...state.toolbarInstance[state.activeToolbarInstanceKey],
     file: file,
-    filename: file.name,
     onSuccess: (res) => {
       document.execCommand('insertImage', false, res.data.url)
       _onSuccess(res)

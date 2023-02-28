@@ -75,15 +75,8 @@ const __base64ToUrl = async (image, container) => {
     let blob = __dataURLToBlob(src);
     let file = __blobToFile(blob, 'homework.png', 'image/png');
     ajax({
-      data: {},
       action: store.state.toolbarInstance[store.state.activeToolbarInstanceKey ?? Object.keys(store.state.toolbarInstance)[0]].action,
       file,
-      filename: file.name,
-      method: 'post',
-      headers: {},
-      withCredentials: true,
-      onProgress: (e) => {},
-      onError:(e) => {},
       onSuccess: (res) => {
         image.setAttribute('src', `${new URL('https://xiaohe.edu/system/file/uploadFile').origin}${res.json.filePath}`);
         loading.remove();
